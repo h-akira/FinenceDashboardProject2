@@ -1,0 +1,9 @@
+[submodule "CICD"]
+	path = CICD
+	url = git@github.com:h-akira/FinanceDashboardProject2_CICD.git
+[submodule "Infra"]
+	path = Infra
+	url = git@github.com:h-akira/FinanceDashboardProject2_Infra.git
+[submodule "Frontend"]
+	path = Frontend
+	url = git@github.com:h-akira/FinanceDashboardProject2_Frontend.git

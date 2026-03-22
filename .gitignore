@@ -1,0 +1,10 @@
+# Temporary working files (not for version control)
+tmp/
+docs/tmp_memo.md
+
+# Local resources (not for version control)
+local/
+
+# Old/archived files (not for version control)
+old/
+

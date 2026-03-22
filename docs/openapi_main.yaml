@@ -1,0 +1,171 @@
+openapi: "3.0.3"
+info:
+  title: FinanceDashboardProject2 Main API
+  description: |
+    金融ダッシュボードアプリケーションのメイン API。
+    ユーザー管理および金融データの提供を行う。
+  version: "1.0.0"
+
+servers:
+  - url: /api/v1/main
+    description: CloudFront 経由のベースパス
+
+# ---------- Security ----------
+security:
+  - CognitoAuthorizer: []
+
+components:
+  securitySchemes:
+    CognitoAuthorizer:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: "Bearer {ID Token} (Cognito)"
+
+  # ---------- Schemas ----------
+  schemas:
+    # ----- User -----
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+          description: ユーザー名
+        email:
+          type: string
+          format: email
+          description: メールアドレス
+        email_verified:
+          type: boolean
+          description: メール認証済みかどうか
+        created_at:
+          type: string
+          format: date-time
+          description: 登録日
+      required: [username, email, email_verified, created_at]
+
+    DeleteUserRequest:
+      type: object
+      properties:
+        password:
+          type: string
+          description: 現在のパスワード（Cognito 認証に使用）
+      required: [password]
+
+    # ----- Interest Rate -----
+    InterestRateDataPoint:
+      type: object
+      description: 月次の政策金利・長期金利データ（月末値）
+      properties:
+        time:
+          type: string
+          description: 年月（YYYY-MM-DD 形式、月末日）
+          example: "2024-01-31"
+        target_rate:
+          type: number
+          format: double
+          description: FF金利誘導目標（上限）。DFEDTAR（2008年以前）と DFEDTARU（2008年以降）を結合
+        dgs10:
+          type: number
+          format: double
+          description: 米国10年国債利回り（DGS10）
+      required: [time, target_rate, dgs10]
+
+    InterestRateResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/InterestRateDataPoint"
+      required: [data]
+
+    # ----- Common -----
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          description: エラーメッセージ
+      required: [message]
+
+# ---------- Paths ----------
+paths:
+  # ===== Users =====
+  /users/me:
+    get:
+      summary: ログインユーザーの情報取得
+      operationId: getMe
+      tags: [Users]
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: 認証エラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    delete:
+      summary: アカウント削除
+      operationId: deleteMe
+      tags: [Users]
+      description: |
+        パスワードを受け取り、Lambda が Cognito に対してパスワード検証を行った上で、
+        Cognito ユーザーを削除する。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeleteUserRequest"
+      responses:
+        "204":
+          description: 削除成功
+        "401":
+          description: 認証エラー（トークン無効・期限切れ）
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: パスワード不一致
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  # ===== Finance =====
+  /finance/interest-rate:
+    get:
+      summary: 政策金利・長期金利データの取得
+      operationId: getInterestRate
+      tags: [Finance]
+      description: |
+        FRED データ（DFEDTAR/DFEDTARU, DGS10）に基づく
+        月次の政策金利・長期金利データを返す。
+        2025年以前のデータは固定で保持し、それ以降のデータのみ外部から取得して結合する。
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InterestRateResponse"
+        "401":
+          description: 認証エラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "502":
+          description: 外部データソースからの取得失敗
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
