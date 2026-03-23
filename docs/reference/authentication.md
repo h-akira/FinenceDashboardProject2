@@ -7,7 +7,7 @@
 ### 前提
 
 - 認証基盤（Cognito User Pool）はインフラユニットが CDK で管理する
-- ログイン・サインアップの UI は **Cognito Managed Login** を使用し、フロントエンド側で認証画面を実装しない
+- ログインの UI は **Cognito Managed Login** を使用し、フロントエンド側で認証画面を実装しない（セルフサインアップを有効にする場合はサインアップ UI も Cognito Managed Login を使用する）
 - 認可フローは **Authorization Code Flow with PKCE** を採用する
 
 ---
@@ -53,7 +53,7 @@ sequenceDiagram
 user_pool = cognito.UserPool(
   self, "UserPool",
   user_pool_name=f"userpool-{project}-{env_name}-infra",
-  self_sign_up_enabled=True,
+  self_sign_up_enabled=True,  # Requirements-dependent (True: self-signup / False: admin-only)
   sign_in_aliases=cognito.SignInAliases(email=True),
   auto_verify=cognito.AutoVerifiedAttrs(email=True),
   password_policy=cognito.PasswordPolicy(
@@ -71,7 +71,7 @@ user_pool = cognito.UserPool(
 
 | 設定項目 | 値 | 備考 |
 |---------|-----|------|
-| セルフサインアップ | 有効 | |
+| セルフサインアップ | 要件次第 | `True`: ユーザー自己登録可 / `False`: 管理者がコンソールまたは CLI で作成 |
 | サインイン方法 | メールアドレス | 大文字小文字区別なし |
 | メール自動検証 | 有効 | |
 | パスワードポリシー | 8文字以上、大小英数字+記号必須 | |
@@ -217,7 +217,9 @@ async function login() {
 }
 ```
 
-### サインアップ
+### サインアップ（セルフサインアップ有効時のみ）
+
+> セルフサインアップを無効にしている場合、このセクションは不要。
 
 ログインと同じフローだが、`/signup` エンドポイントを使用する。
 

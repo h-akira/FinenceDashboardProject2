@@ -7,3 +7,6 @@
 [submodule "Frontend"]
 	path = Frontend
 	url = git@github.com:h-akira/FinanceDashboardProject2_Frontend.git
+[submodule "Backend/main"]
+	path = Backend/main
+	url = git@github.com:h-akira/FinanceDashboardProject2_Backend_main.git

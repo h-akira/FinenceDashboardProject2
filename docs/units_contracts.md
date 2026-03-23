@@ -96,7 +96,6 @@ infra ↔ backend-main 間に循環依存が存在する。実装時にはイン
 | `${project}-${env}-infra-S3BucketName` | バケット名 | デプロイ先 S3 バケット |
 | `${project}-${env}-infra-CloudFrontDistributionId` | Distribution ID | キャッシュ無効化の対象 |
 | `${project}-${env}-infra-DomainName` | カスタムドメイン名 | `VITE_REDIRECT_URI` の生成 |
-| `${project}-${env}-infra-CognitoUserPoolId` | User Pool ID | `VITE_COGNITO_AUTHORITY` の生成 |
 | `${project}-${env}-infra-CognitoClientId` | App Client ID | `VITE_COGNITO_CLIENT_ID` |
 | `${project}-${env}-infra-CognitoDomain` | Cognito ドメイン | `VITE_COGNITO_DOMAIN` |
 
