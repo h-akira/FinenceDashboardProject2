@@ -48,11 +48,12 @@ FinanceDashboardProject2/
 | `_api_list.md` | `openapi_*.yaml` を作成するための一時ファイル（役割を終えたら `docs/old/` に移動する。仕様変更時には更新しない） |
 | `openapi_main.yaml` | メイン API の OpenAPI 定義 |
 
-### 仕様変更通知 (`docs/changes/`)
+### 仕様変更通知 (`docs/history/`)
 
 いずれかのユニット（Frontend, Backend, Infra 等）の都合で共有ドキュメントに修正が入った場合に作成する通知ファイル。
 
-- `XXX` は 3 桁の連番（`001`, `002`, ...）。既存ファイルの最大番号 + 1 を採番する
+- ファイル名: `XXX_（概要を表すスネークケース）.md`（`XXX` は 3 桁の連番）。既存ファイルの最大番号 + 1 を採番する
+- テンプレート: `docs/history/XXX_template.md` に従って作成すること
 - 内容: 変更概要、対象ファイル・エンドポイント、影響を受けるユニット、各ユニットで必要な対応
 
 ## バグ管理 (`bugs/`)
