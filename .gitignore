@@ -8,3 +8,5 @@ local/
 # Old/archived files (not for version control)
 old/
 
+# experimental
+experimental/
