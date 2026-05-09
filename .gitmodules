@@ -10,3 +10,6 @@
 [submodule "Backend/main"]
 	path = Backend/main
 	url = git@github.com:h-akira/FinanceDashboardProject2_Backend_main.git
+[submodule ".devcontainer"]
+	path = .devcontainer
+	url = git@github.com:h-akira/devcontainer.git
